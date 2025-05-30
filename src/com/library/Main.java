@@ -74,6 +74,10 @@ public class Main {
             adminPerson.setEmail("admin@lendify.com");
             currentLibrarian = new Librarian(adminPerson, "L001", "Admin Perpustakaan", 0, LibrarianPermission.ADMIN);
             library.addLibrarian(currentLibrarian);
+            
+            // Reset nama dan alamat library agar setup panel ditampilkan
+            library.setName("");
+            library.setAddress("");
         } catch (Exception e) {
             System.out.println("Terjadi kesalahan saat membuat pustakawan admin: " + e.getMessage());
         }

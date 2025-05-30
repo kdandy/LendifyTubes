@@ -37,34 +37,114 @@ public class CategoryPanel extends JPanel {
      * Setup komponen UI
      */
     private void setupUI() {
-        setLayout(new BorderLayout(10, 10));
-        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        setLayout(new BorderLayout());
+        setBackground(new Color(245, 245, 245));
         
-        // Panel judul
-        JPanel titlePanel = new JPanel(new BorderLayout());
-        JLabel titleLabel = new JLabel("Kelola Kategori Buku", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        titlePanel.add(titleLabel, BorderLayout.CENTER);
+        // Main container dengan gradient background
+        JPanel mainContainer = new JPanel(new BorderLayout(0, 20)) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                GradientPaint gradient = new GradientPaint(0, 0, new Color(240, 248, 255), 0, getHeight(), new Color(230, 240, 250));
+                g2d.setPaint(gradient);
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
+        mainContainer.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
         
-        // Panel pencarian
-        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        // Title card dengan shadow
+        JPanel titleCard = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Shadow
+                g2d.setColor(new Color(0, 0, 0, 30));
+                g2d.fillRoundRect(3, 3, getWidth() - 3, getHeight() - 3, 15, 15);
+                
+                // Main card
+                g2d.setColor(Color.WHITE);
+                g2d.fillRoundRect(0, 0, getWidth() - 3, getHeight() - 3, 15, 15);
+            }
+        };
+        titleCard.setOpaque(false);
+        titleCard.setLayout(new BorderLayout(20, 0));
+        titleCard.setBorder(BorderFactory.createEmptyBorder(20, 25, 20, 25));
+        
+        // Header panel dengan icon dan title
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 0));
+        headerPanel.setOpaque(false);
+        
+        JLabel iconLabel = new JLabel("📂");
+        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 24));
+        
+        JLabel titleLabel = new JLabel("Kelola Kategori Buku");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        titleLabel.setForeground(new Color(51, 51, 51));
+        
+        headerPanel.add(iconLabel);
+        headerPanel.add(titleLabel);
+        
+        // Search panel dengan modern design
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        searchPanel.setOpaque(false);
+        
+        JLabel searchLabel = new JLabel("🔍 Cari:");
+        searchLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        searchLabel.setForeground(new Color(102, 102, 102));
+        
         searchField = new JTextField(20);
-        JButton searchButton = new JButton("Cari");
+        searchField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        searchField.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
+            BorderFactory.createEmptyBorder(8, 12, 8, 12)
+        ));
+        
+        JButton searchButton = createModernButton("Cari", new Color(52, 152, 219), Color.WHITE);
         searchButton.addActionListener(e -> searchCategories());
         
-        searchPanel.add(new JLabel("Cari: "));
+        searchPanel.add(searchLabel);
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
         
-        titlePanel.add(searchPanel, BorderLayout.EAST);
-        add(titlePanel, BorderLayout.NORTH);
+        titleCard.add(headerPanel, BorderLayout.WEST);
+        titleCard.add(searchPanel, BorderLayout.EAST);
+        
+        mainContainer.add(titleCard, BorderLayout.NORTH);
+        
+        // Content card untuk tabel
+        JPanel contentCard = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Shadow
+                g2d.setColor(new Color(0, 0, 0, 30));
+                g2d.fillRoundRect(3, 3, getWidth() - 3, getHeight() - 3, 15, 15);
+                
+                // Main card
+                g2d.setColor(Color.WHITE);
+                g2d.fillRoundRect(0, 0, getWidth() - 3, getHeight() - 3, 15, 15);
+            }
+        };
+        contentCard.setOpaque(false);
+        contentCard.setLayout(new BorderLayout());
+        contentCard.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
         // Panel tabel
         tableModel = new CategoryTableModel(new ArrayList<>(mainWindow.getLibrary().getCollection().getCategories()));
         categoryTable = new JTable(tableModel);
         categoryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        categoryTable.setRowHeight(25);
+        categoryTable.setRowHeight(30);
         categoryTable.getTableHeader().setReorderingAllowed(false);
+        categoryTable.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        categoryTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
         
         // Sorter untuk tabel
         TableRowSorter<CategoryTableModel> sorter = new TableRowSorter<>(tableModel);
@@ -82,25 +162,51 @@ public class CategoryPanel extends JPanel {
         
         // Panel untuk tabel dengan scrolling
         JScrollPane tableScrollPane = new JScrollPane(categoryTable);
-        add(tableScrollPane, BorderLayout.CENTER);
+        tableScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        contentCard.add(tableScrollPane, BorderLayout.CENTER);
         
-        // Panel tombol
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        addButton = new JButton("Tambah Kategori");
-        editButton = new JButton("Edit Kategori");
-        deleteButton = new JButton("Hapus Kategori");
-        backButton = new JButton("Kembali");
+        mainContainer.add(contentCard, BorderLayout.CENTER);
+        
+        // Button card dengan shadow
+        JPanel buttonCard = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Shadow
+                g2d.setColor(new Color(0, 0, 0, 30));
+                g2d.fillRoundRect(3, 3, getWidth() - 3, getHeight() - 3, 15, 15);
+                
+                // Main card
+                g2d.setColor(Color.WHITE);
+                g2d.fillRoundRect(0, 0, getWidth() - 3, getHeight() - 3, 15, 15);
+            }
+        };
+        buttonCard.setOpaque(false);
+        buttonCard.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 20));
+        buttonCard.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        
+        // Modern buttons
+        addButton = createModernButton("➕ Tambah Kategori", new Color(46, 204, 113), Color.WHITE);
+        editButton = createModernButton("✏️ Edit Kategori", new Color(52, 152, 219), Color.WHITE);
+        deleteButton = createModernButton("🗑️ Hapus Kategori", new Color(231, 76, 60), Color.WHITE);
+        backButton = createModernButton("🏠 Kembali ke Menu Utama", new Color(149, 165, 166), Color.WHITE);
         
         addButton.addActionListener(e -> addCategory());
         editButton.addActionListener(e -> editCategory());
         deleteButton.addActionListener(e -> deleteCategory());
         backButton.addActionListener(e -> mainWindow.showMainPanel());
         
-        buttonPanel.add(addButton);
-        buttonPanel.add(editButton);
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(backButton);
-        add(buttonPanel, BorderLayout.SOUTH);
+        buttonCard.add(addButton);
+        buttonCard.add(editButton);
+        buttonCard.add(deleteButton);
+        buttonCard.add(backButton);
+        
+        mainContainer.add(buttonCard, BorderLayout.SOUTH);
+        
+        add(mainContainer, BorderLayout.CENTER);
         
         // Set initial button states
         updateButtonStates();
@@ -204,6 +310,42 @@ public class CategoryPanel extends JPanel {
                 GUIUtils.errorDialog(this, ex.getMessage(), "Error");
             }
         }
+    }
+    
+    /**
+     * Membuat button dengan design modern
+     */
+    private JButton createModernButton(String text, Color backgroundColor, Color textColor) {
+        JButton button = new JButton(text) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                Color bgColor = backgroundColor;
+                if (getModel().isPressed()) {
+                    bgColor = backgroundColor.darker();
+                } else if (getModel().isRollover()) {
+                    bgColor = backgroundColor.brighter();
+                }
+                
+                g2d.setColor(bgColor);
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                
+                super.paintComponent(g);
+            }
+        };
+        
+        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        button.setForeground(textColor);
+        button.setOpaque(false);
+        button.setContentAreaFilled(false);
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setPreferredSize(new Dimension(180, 40));
+        
+        return button;
     }
     
     /**

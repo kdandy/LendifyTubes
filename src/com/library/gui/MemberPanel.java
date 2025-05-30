@@ -47,34 +47,146 @@ public class MemberPanel extends JPanel {
      * Setup komponen UI
      */
     private void setupUI() {
-        setLayout(new BorderLayout(10, 10));
-        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        setLayout(new BorderLayout());
+        setOpaque(false);
         
-        // Panel judul
-        JPanel titlePanel = new JPanel(new BorderLayout());
-        JLabel titleLabel = new JLabel("Kelola Anggota", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        titlePanel.add(titleLabel, BorderLayout.CENTER);
+        // Create main container with gradient background
+        JPanel mainContainer = new JPanel(new BorderLayout(20, 20)) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Gradient background
+                GradientPaint gradient = new GradientPaint(
+                    0, 0, new Color(74, 144, 226),
+                    0, getHeight(), new Color(80, 170, 200)
+                );
+                g2d.setPaint(gradient);
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+                g2d.dispose();
+            }
+        };
+        mainContainer.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
         
-        // Panel pencarian
-        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        // Modern title panel with card design
+        JPanel titleCard = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Draw shadow
+                g2d.setColor(new Color(0, 0, 0, 30));
+                g2d.fillRoundRect(5, 5, getWidth() - 5, getHeight() - 5, 25, 25);
+                
+                // Draw main card
+                g2d.setColor(Color.WHITE);
+                g2d.fillRoundRect(0, 0, getWidth() - 5, getHeight() - 5, 25, 25);
+                g2d.dispose();
+            }
+        };
+        titleCard.setLayout(new BorderLayout(20, 0));
+        titleCard.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+        titleCard.setOpaque(false);
+        
+        // Header with icon and title
+        JPanel headerPanel = new JPanel(new BorderLayout(15, 0));
+        headerPanel.setOpaque(false);
+        
+        JLabel iconLabel = new JLabel("👥");
+        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 32));
+        headerPanel.add(iconLabel, BorderLayout.WEST);
+        
+        JLabel titleLabel = new JLabel("Kelola Anggota");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        titleLabel.setForeground(new Color(44, 62, 80));
+        headerPanel.add(titleLabel, BorderLayout.CENTER);
+        
+        // Modern search panel
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        searchPanel.setOpaque(false);
+        
+        JLabel searchLabel = new JLabel("🔍 Cari:");
+        searchLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        searchLabel.setForeground(new Color(44, 62, 80));
+        
         searchField = new JTextField(20);
-        JButton searchButton = new JButton("Cari");
+        searchField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        searchField.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
+            BorderFactory.createEmptyBorder(8, 12, 8, 12)
+        ));
+        
+        JButton searchButton = new JButton("Cari") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                if (getModel().isPressed()) {
+                    g2d.setColor(new Color(52, 152, 219).darker());
+                } else if (getModel().isRollover()) {
+                    g2d.setColor(new Color(52, 152, 219).brighter());
+                } else {
+                    g2d.setColor(new Color(52, 152, 219));
+                }
+                
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
+                g2d.dispose();
+                
+                super.paintComponent(g);
+            }
+        };
+        searchButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        searchButton.setForeground(Color.WHITE);
+        searchButton.setPreferredSize(new Dimension(80, 35));
+        searchButton.setBorderPainted(false);
+        searchButton.setContentAreaFilled(false);
+        searchButton.setFocusPainted(false);
+        searchButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         searchButton.addActionListener(e -> searchMembers());
         
-        searchPanel.add(new JLabel("Cari: "));
+        searchPanel.add(searchLabel);
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
         
-        titlePanel.add(searchPanel, BorderLayout.EAST);
-        add(titlePanel, BorderLayout.NORTH);
+        titleCard.add(headerPanel, BorderLayout.CENTER);
+        titleCard.add(searchPanel, BorderLayout.EAST);
+        mainContainer.add(titleCard, BorderLayout.NORTH);
+        
+        // Create content card with modern design
+        JPanel contentCard = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Draw shadow
+                g2d.setColor(new Color(0, 0, 0, 30));
+                g2d.fillRoundRect(5, 5, getWidth() - 5, getHeight() - 5, 25, 25);
+                
+                // Draw main card
+                g2d.setColor(Color.WHITE);
+                g2d.fillRoundRect(0, 0, getWidth() - 5, getHeight() - 5, 25, 25);
+                g2d.dispose();
+            }
+        };
+        contentCard.setLayout(new BorderLayout(15, 15));
+        contentCard.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
+        contentCard.setOpaque(false);
         
         // Panel tabel
         tableModel = new MemberTableModel(new ArrayList<>(mainWindow.getMembers()));
         memberTable = new JTable(tableModel);
         memberTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        memberTable.setRowHeight(25);
+        memberTable.setRowHeight(30);
+        memberTable.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        memberTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
         memberTable.getTableHeader().setReorderingAllowed(false);
+        memberTable.setGridColor(new Color(230, 230, 230));
+        memberTable.setSelectionBackground(new Color(52, 152, 219, 50));
         
         // Sorter untuk tabel
         TableRowSorter<MemberTableModel> sorter = new TableRowSorter<>(tableModel);
@@ -92,11 +204,28 @@ public class MemberPanel extends JPanel {
         
         // Panel untuk tabel dengan scrolling
         JScrollPane tableScrollPane = new JScrollPane(memberTable);
-        add(tableScrollPane, BorderLayout.CENTER);
+        tableScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        tableScrollPane.getViewport().setBackground(Color.WHITE);
         
-        // Panel filter
-        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        filterPanel.setBorder(BorderFactory.createTitledBorder("Filter"));
+        // Modern filter panel
+        JPanel filterCard = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setColor(new Color(248, 249, 250));
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
+                g2d.dispose();
+            }
+        };
+        filterCard.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 10));
+        filterCard.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
+        filterCard.setOpaque(false);
+        
+        JLabel filterLabel = new JLabel("🔧 Filter:");
+        filterLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        filterLabel.setForeground(new Color(44, 62, 80));
+        filterCard.add(filterLabel);
         
         JRadioButton allRadio = new JRadioButton("Semua", true);
         JRadioButton studentRadio = new JRadioButton("Mahasiswa");
@@ -114,33 +243,82 @@ public class MemberPanel extends JPanel {
         statusGroup.add(activeRadio);
         statusGroup.add(inactiveRadio);
         
+        // Style radio buttons
+        Font radioFont = new Font("Segoe UI", Font.PLAIN, 13);
+        Color radioColor = new Color(44, 62, 80);
+        
+        allRadio.setFont(radioFont);
+        allRadio.setForeground(radioColor);
+        allRadio.setOpaque(false);
+        studentRadio.setFont(radioFont);
+        studentRadio.setForeground(radioColor);
+        studentRadio.setOpaque(false);
+        regularRadio.setFont(radioFont);
+        regularRadio.setForeground(radioColor);
+        regularRadio.setOpaque(false);
+        activeRadio.setFont(radioFont);
+        activeRadio.setForeground(radioColor);
+        activeRadio.setOpaque(false);
+        inactiveRadio.setFont(radioFont);
+        inactiveRadio.setForeground(radioColor);
+        inactiveRadio.setOpaque(false);
+        
         allRadio.addActionListener(e -> filterMembers(null, null));
         studentRadio.addActionListener(e -> filterMembers("student", null));
         regularRadio.addActionListener(e -> filterMembers("regular", null));
         activeRadio.addActionListener(e -> filterMembers(null, true));
         inactiveRadio.addActionListener(e -> filterMembers(null, false));
         
-        filterPanel.add(new JLabel("Tipe:"));
-        filterPanel.add(allRadio);
-        filterPanel.add(studentRadio);
-        filterPanel.add(regularRadio);
-        filterPanel.add(Box.createHorizontalStrut(20));
-        filterPanel.add(new JLabel("Status:"));
-        filterPanel.add(activeRadio);
-        filterPanel.add(inactiveRadio);
+        JLabel typeLabel = new JLabel("Tipe:");
+        typeLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        typeLabel.setForeground(radioColor);
         
-        // Panel aksi
-        JPanel actionPanel = new JPanel(new BorderLayout());
-        actionPanel.add(filterPanel, BorderLayout.NORTH);
+        JLabel statusLabel = new JLabel("Status:");
+        statusLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        statusLabel.setForeground(radioColor);
         
-        // Panel tombol
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        addButton = new JButton("Tambah Anggota");
-        editButton = new JButton("Edit Anggota");
-        detailsButton = new JButton("Lihat Detail");
-        renewButton = new JButton("Perpanjang Keanggotaan");
-        toggleStatusButton = new JButton("Aktifkan/Nonaktifkan");
-        backButton = new JButton("Kembali");
+        filterCard.add(typeLabel);
+        filterCard.add(allRadio);
+        filterCard.add(studentRadio);
+        filterCard.add(regularRadio);
+        filterCard.add(Box.createHorizontalStrut(20));
+        filterCard.add(statusLabel);
+        filterCard.add(activeRadio);
+        filterCard.add(inactiveRadio);
+        
+        // Add components to content card
+        contentCard.add(filterCard, BorderLayout.NORTH);
+        contentCard.add(tableScrollPane, BorderLayout.CENTER);
+        mainContainer.add(contentCard, BorderLayout.CENTER);
+        
+        // Modern button panel
+        JPanel buttonCard = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Draw shadow
+                g2d.setColor(new Color(0, 0, 0, 30));
+                g2d.fillRoundRect(5, 5, getWidth() - 5, getHeight() - 5, 25, 25);
+                
+                // Draw main card
+                g2d.setColor(Color.WHITE);
+                g2d.fillRoundRect(0, 0, getWidth() - 5, getHeight() - 5, 25, 25);
+                g2d.dispose();
+            }
+        };
+        buttonCard.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 15));
+        buttonCard.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25));
+        buttonCard.setOpaque(false);
+        
+        // Create modern buttons
+        addButton = createModernButton("➕ Tambah Anggota", new Color(46, 204, 113));
+        editButton = createModernButton("✏️ Edit Anggota", new Color(52, 152, 219));
+        detailsButton = createModernButton("👁️ Lihat Detail", new Color(155, 89, 182));
+        renewButton = createModernButton("🔄 Perpanjang", new Color(230, 126, 34));
+        toggleStatusButton = createModernButton("🔄 Status", new Color(241, 196, 15));
+        backButton = createModernButton("🏠 Kembali", new Color(149, 165, 166));
 
         // Add tooltips for better usability
         addButton.setToolTipText("Tambah anggota baru ke perpustakaan");
@@ -149,74 +327,73 @@ public class MemberPanel extends JPanel {
         renewButton.setToolTipText("Perpanjang masa keanggotaan anggota yang dipilih");
         toggleStatusButton.setToolTipText("Aktifkan atau nonaktifkan status anggota yang dipilih");
         backButton.setToolTipText("Kembali ke menu utama");
-
-        // Set up action listeners with explicit new ActionListener objects for better debugging
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Add button clicked");
-                addMember();
-            }
-        });
-
-        editButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Edit button clicked");
-                editMember();
-            }
-        });
-
-        detailsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Details button clicked");
-                viewMemberDetails();
-            }
-        });
-
-        renewButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Renew button clicked");
-                renewMembership();
-            }
-        });
-
-        toggleStatusButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Toggle status button clicked");
-                toggleMemberStatus();
-            }
-        });
-
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mainWindow.showMainPanel();
-            }
-        });
-
-        buttonPanel.add(addButton);
-        buttonPanel.add(editButton);
-        buttonPanel.add(detailsButton);
-        buttonPanel.add(renewButton);
-        buttonPanel.add(toggleStatusButton);
-        buttonPanel.add(backButton);
-
-        actionPanel.add(buttonPanel, BorderLayout.SOUTH);
-        add(actionPanel, BorderLayout.SOUTH);
-
+        
+        // Add action listeners
+        addButton.addActionListener(e -> addMember());
+        editButton.addActionListener(e -> editMember());
+        detailsButton.addActionListener(e -> viewMemberDetails());
+        renewButton.addActionListener(e -> renewMembership());
+        toggleStatusButton.addActionListener(e -> toggleMemberStatus());
+        backButton.addActionListener(e -> mainWindow.showMainPanel());
+        
+        // Add buttons to button card
+        buttonCard.add(addButton);
+        buttonCard.add(editButton);
+        buttonCard.add(detailsButton);
+        buttonCard.add(renewButton);
+        buttonCard.add(toggleStatusButton);
+        buttonCard.add(backButton);
+        
+        mainContainer.add(buttonCard, BorderLayout.SOUTH);
+        add(mainContainer, BorderLayout.CENTER);
+        
         // Tambahkan selection listener untuk update button states
         memberTable.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 updateButtonStates();
             }
         });
-
+        
         // Set initial button states
         updateButtonStates();
+    }
+    
+    /**
+     * Create a modern styled button
+     */
+    private JButton createModernButton(String text, Color baseColor) {
+        JButton button = new JButton(text) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                Color buttonColor;
+                if (getModel().isPressed()) {
+                    buttonColor = baseColor.darker();
+                } else if (getModel().isRollover()) {
+                    buttonColor = baseColor.brighter();
+                } else {
+                    buttonColor = baseColor;
+                }
+                
+                g2d.setColor(buttonColor);
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
+                g2d.dispose();
+                
+                super.paintComponent(g);
+            }
+        };
+        
+        button.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        button.setForeground(Color.WHITE);
+        button.setPreferredSize(new Dimension(150, 40));
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(false);
+        button.setFocusPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        return button;
     }
     
     /**
@@ -757,22 +934,11 @@ public class MemberPanel extends JPanel {
     private Member getSelectedMember() {
         int selectedRow = memberTable.getSelectedRow();
         
-        System.out.println("getSelectedMember: selectedRow = " + selectedRow); // Debug line
+        if (selectedRow == -1) return null;
         
-        if (selectedRow != -1) {
-            try {
-                int modelRow = memberTable.convertRowIndexToModel(selectedRow);
-                System.out.println("getSelectedMember: modelRow = " + modelRow); // Debug line
-                Member member = tableModel.getMemberAt(modelRow);
-                System.out.println("getSelectedMember: member = " + (member != null ? member.getName() : "null")); // Debug line
-                
-                return member;
-            } catch (Exception e) {
-                System.err.println("Error getting selected member: " + e.getMessage());
-                e.printStackTrace();
-                return null;
-            }
-        }
-        return null;
+        int modelRow = memberTable.convertRowIndexToModel(selectedRow);
+        Member member = tableModel.getMemberAt(modelRow);
+        
+        return member;
     }
 }

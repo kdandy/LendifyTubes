@@ -27,7 +27,6 @@ public class LendifyGUI extends JFrame {
     // Panel-panel utama
     private JPanel cardPanel;
     private CardLayout cardLayout;
-    private LoginPanel loginPanel;
     private LibrarySetupPanel librarySetupPanel;
     private MainPanel mainPanel;
     private LibrarianPanel librarianPanel;
@@ -87,7 +86,6 @@ public class LendifyGUI extends JFrame {
         cardPanel = new JPanel(cardLayout);
         
         // Inisialisasi panels
-        loginPanel = new LoginPanel(this);
         librarySetupPanel = new LibrarySetupPanel(this);
         mainPanel = new MainPanel(this);
         librarianPanel = new LibrarianPanel(this);
@@ -100,7 +98,6 @@ public class LendifyGUI extends JFrame {
         statisticsPanel = new StatisticsPanel(this);
         
         // Tambahkan panels ke card layout
-        cardPanel.add(loginPanel, "login");
         cardPanel.add(librarySetupPanel, "setup");
         cardPanel.add(mainPanel, "main");
         cardPanel.add(librarianPanel, "librarian");
@@ -112,8 +109,14 @@ public class LendifyGUI extends JFrame {
         cardPanel.add(searchPanel, "search");
         cardPanel.add(statisticsPanel, "statistics");
         
-        // Default tampilkan panel utama (karena login sudah dilakukan di terminal)
-        cardLayout.show(cardPanel, "main");
+        // Cek apakah setup sudah dilakukan
+        if (isLibrarySetupComplete()) {
+            // Jika setup sudah selesai, tampilkan panel utama
+            cardLayout.show(cardPanel, "main");
+        } else {
+            // Jika belum setup, tampilkan panel setup terlebih dahulu
+            cardLayout.show(cardPanel, "setup");
+        }
         
         add(cardPanel);
         
@@ -607,7 +610,12 @@ public class LendifyGUI extends JFrame {
     }
     
     public void showMainPanel() {
-        cardLayout.show(cardPanel, "main");
+        try {
+            cardLayout.show(cardPanel, "main");
+        } catch (Exception e) {
+            System.err.println("Error saat beralih ke main panel: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
     
     public void showLibrarianPanel() {
@@ -705,6 +713,18 @@ public class LendifyGUI extends JFrame {
             library.setName(name);
             library.setAddress(address);
         }
+    }
+    
+    /**
+     * Mengecek apakah setup perpustakaan sudah selesai
+     * @return true jika nama dan alamat perpustakaan sudah diisi
+     */
+    public boolean isLibrarySetupComplete() {
+        return library != null && 
+               library.getName() != null && 
+               !library.getName().trim().isEmpty() &&
+               library.getAddress() != null && 
+               !library.getAddress().trim().isEmpty();
     }
 
     public void showSetupPanel() {

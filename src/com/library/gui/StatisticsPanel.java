@@ -51,49 +51,124 @@ public class StatisticsPanel extends JPanel {
      * Setup komponen UI
      */
     private void setupUI() {
-        setLayout(new BorderLayout(10, 10));
-        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        setLayout(new BorderLayout());
+        setBackground(new Color(245, 245, 245));
         
-        // Panel judul
-        JPanel titlePanel = new JPanel(new BorderLayout());
-        JLabel titleLabel = new JLabel("Statistik Perpustakaan", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        titlePanel.add(titleLabel, BorderLayout.CENTER);
+        // Main container dengan gradient background
+        JPanel mainContainer = new JPanel(new BorderLayout(0, 20)) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                GradientPaint gradient = new GradientPaint(0, 0, new Color(240, 248, 255), 0, getHeight(), new Color(230, 240, 250));
+                g2d.setPaint(gradient);
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
+        mainContainer.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
         
-        // Info perpustakaan
-        JPanel libraryInfoPanel = new JPanel(new GridLayout(1, 2, 5, 5));
-        libraryInfoPanel.add(new JLabel("Perpustakaan: " + mainWindow.getLibrary().getName()));
-        libraryInfoPanel.add(new JLabel("Alamat: " + mainWindow.getLibrary().getAddress()));
+        // Modern title card dengan shadow
+        JPanel titleCard = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Shadow
+                g2d.setColor(new Color(0, 0, 0, 30));
+                g2d.fillRoundRect(3, 3, getWidth() - 3, getHeight() - 3, 15, 15);
+                
+                // Main card
+                g2d.setColor(Color.WHITE);
+                g2d.fillRoundRect(0, 0, getWidth() - 3, getHeight() - 3, 15, 15);
+            }
+        };
+        titleCard.setOpaque(false);
+        titleCard.setLayout(new BorderLayout(20, 15));
+        titleCard.setBorder(BorderFactory.createEmptyBorder(25, 30, 25, 30));
         
-        titlePanel.add(libraryInfoPanel, BorderLayout.SOUTH);
-        add(titlePanel, BorderLayout.NORTH);
+        // Header panel dengan icon dan title
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
+        headerPanel.setOpaque(false);
         
-        // Panel utama dengan split pane
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        splitPane.setDividerLocation(300);
-        splitPane.setResizeWeight(0.5);
+        JLabel iconLabel = new JLabel("📊");
+        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 28));
+        
+        JLabel titleLabel = new JLabel("Statistik Perpustakaan");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        titleLabel.setForeground(new Color(44, 62, 80));
+        
+        headerPanel.add(iconLabel);
+        headerPanel.add(titleLabel);
+        
+        // Info perpustakaan dengan modern styling
+        JPanel libraryInfoPanel = new JPanel(new GridLayout(1, 2, 20, 5));
+        libraryInfoPanel.setOpaque(false);
+        
+        JLabel libraryNameLabel = new JLabel("🏛️ " + mainWindow.getLibrary().getName());
+        libraryNameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        libraryNameLabel.setForeground(new Color(52, 73, 94));
+        
+        JLabel libraryAddressLabel = new JLabel("📍 " + mainWindow.getLibrary().getAddress());
+        libraryAddressLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        libraryAddressLabel.setForeground(new Color(52, 73, 94));
+        
+        libraryInfoPanel.add(libraryNameLabel);
+        libraryInfoPanel.add(libraryAddressLabel);
+        
+        titleCard.add(headerPanel, BorderLayout.CENTER);
+        titleCard.add(libraryInfoPanel, BorderLayout.SOUTH);
+        
+        mainContainer.add(titleCard, BorderLayout.NORTH);
+        
+        // Modern content area
+        JPanel contentArea = new JPanel(new BorderLayout(0, 20));
+        contentArea.setOpaque(false);
         
         // Panel atas untuk ringkasan statistik
         summaryPanel = createSummaryPanel();
-        splitPane.setTopComponent(summaryPanel);
+        contentArea.add(summaryPanel, BorderLayout.NORTH);
         
         // Panel bawah untuk grafik dan chart
         chartsPanel = createChartsPanel();
-        splitPane.setBottomComponent(chartsPanel);
+        contentArea.add(chartsPanel, BorderLayout.CENTER);
         
-        add(splitPane, BorderLayout.CENTER);
+        mainContainer.add(contentArea, BorderLayout.CENTER);
         
-        // Panel tombol
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        refreshButton = new JButton("Refresh Data");
-        backButton = new JButton("Kembali");
+        // Modern button panel
+        JPanel buttonCard = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Shadow
+                g2d.setColor(new Color(0, 0, 0, 30));
+                g2d.fillRoundRect(3, 3, getWidth() - 3, getHeight() - 3, 15, 15);
+                
+                // Main card
+                g2d.setColor(Color.WHITE);
+                g2d.fillRoundRect(0, 0, getWidth() - 3, getHeight() - 3, 15, 15);
+            }
+        };
+        buttonCard.setOpaque(false);
+        buttonCard.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 15));
+        buttonCard.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
+        
+        refreshButton = createModernButton("🔄 Refresh Data", new Color(52, 152, 219));
+        backButton = createModernButton("🏠 Kembali ke Menu Utama", new Color(149, 165, 166));
         
         refreshButton.addActionListener(e -> refreshData());
         backButton.addActionListener(e -> mainWindow.showMainPanel());
         
-        buttonPanel.add(refreshButton);
-        buttonPanel.add(backButton);
-        add(buttonPanel, BorderLayout.SOUTH);
+        buttonCard.add(refreshButton);
+        buttonCard.add(backButton);
+        
+        mainContainer.add(buttonCard, BorderLayout.SOUTH);
+        add(mainContainer, BorderLayout.CENTER);
         
         // Refresh data awal
         refreshData();
@@ -103,57 +178,82 @@ public class StatisticsPanel extends JPanel {
      * Buat panel ringkasan statistik
      */
     private JPanel createSummaryPanel() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-        panel.setBorder(BorderFactory.createTitledBorder("Ringkasan Statistik"));
+        JPanel summaryCard = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Shadow
+                g2d.setColor(new Color(0, 0, 0, 30));
+                g2d.fillRoundRect(3, 3, getWidth() - 3, getHeight() - 3, 15, 15);
+                
+                // Main card
+                g2d.setColor(Color.WHITE);
+                g2d.fillRoundRect(0, 0, getWidth() - 3, getHeight() - 3, 15, 15);
+            }
+        };
+        summaryCard.setOpaque(false);
+        summaryCard.setLayout(new BorderLayout(15, 15));
+        summaryCard.setBorder(BorderFactory.createEmptyBorder(20, 25, 20, 25));
         
-        // Panel statistik utama (2 kolom)
-        JPanel statsPanel = new JPanel(new GridLayout(5, 4, 15, 5));
+        // Modern title
+        JLabel titleLabel = new JLabel("📈 Ringkasan Statistik");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        titleLabel.setForeground(new Color(44, 62, 80));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
+        summaryCard.add(titleLabel, BorderLayout.NORTH);
+        
+        // Panel statistik utama dengan modern grid
+        JPanel statsPanel = new JPanel(new GridLayout(5, 4, 20, 10));
+        statsPanel.setOpaque(false);
         
         // Kolom 1: Statistik buku
-        statsPanel.add(createStatsLabel("Total Buku:"));
-        totalBooksLabel = createValueLabel("0");
+        statsPanel.add(createModernStatsLabel("📚 Total Buku:"));
+        totalBooksLabel = createModernValueLabel("0", new Color(52, 152, 219));
         statsPanel.add(totalBooksLabel);
         
-        statsPanel.add(createStatsLabel("Total Kategori:"));
-        totalCategoriesLabel = createValueLabel("0");
+        statsPanel.add(createModernStatsLabel("📂 Total Kategori:"));
+        totalCategoriesLabel = createModernValueLabel("0", new Color(155, 89, 182));
         statsPanel.add(totalCategoriesLabel);
         
-        statsPanel.add(createStatsLabel("Buku Tersedia:"));
-        availableBooksLabel = createValueLabel("0");
+        statsPanel.add(createModernStatsLabel("✅ Buku Tersedia:"));
+        availableBooksLabel = createModernValueLabel("0", new Color(46, 204, 113));
         statsPanel.add(availableBooksLabel);
         
-        statsPanel.add(createStatsLabel("Buku Dipinjam:"));
-        borrowedBooksLabel = createValueLabel("0");
+        statsPanel.add(createModernStatsLabel("📤 Buku Dipinjam:"));
+        borrowedBooksLabel = createModernValueLabel("0", new Color(230, 126, 34));
         statsPanel.add(borrowedBooksLabel);
         
-        statsPanel.add(createStatsLabel("Total Denda:"));
-        totalFinesLabel = createValueLabel("Rp 0,00");
+        statsPanel.add(createModernStatsLabel("💰 Total Denda:"));
+        totalFinesLabel = createModernValueLabel("Rp 0,00", new Color(231, 76, 60));
         statsPanel.add(totalFinesLabel);
         
         // Kolom 2: Statistik anggota dan transaksi
-        statsPanel.add(createStatsLabel("Total Anggota:"));
-        totalMembersLabel = createValueLabel("0");
+        statsPanel.add(createModernStatsLabel("👥 Total Anggota:"));
+        totalMembersLabel = createModernValueLabel("0", new Color(52, 152, 219));
         statsPanel.add(totalMembersLabel);
         
-        statsPanel.add(createStatsLabel("Anggota Mahasiswa:"));
-        studentMembersLabel = createValueLabel("0");
+        statsPanel.add(createModernStatsLabel("🎓 Anggota Mahasiswa:"));
+        studentMembersLabel = createModernValueLabel("0", new Color(155, 89, 182));
         statsPanel.add(studentMembersLabel);
         
-        statsPanel.add(createStatsLabel("Anggota Reguler:"));
-        regularMembersLabel = createValueLabel("0");
+        statsPanel.add(createModernStatsLabel("👤 Anggota Reguler:"));
+        regularMembersLabel = createModernValueLabel("0", new Color(46, 204, 113));
         statsPanel.add(regularMembersLabel);
         
-        statsPanel.add(createStatsLabel("Peminjaman Aktif:"));
-        activeLoansLabel = createValueLabel("0");
+        statsPanel.add(createModernStatsLabel("📋 Peminjaman Aktif:"));
+        activeLoansLabel = createModernValueLabel("0", new Color(230, 126, 34));
         statsPanel.add(activeLoansLabel);
         
-        statsPanel.add(createStatsLabel("Reservasi Pending:"));
-        pendingReservationsLabel = createValueLabel("0");
+        statsPanel.add(createModernStatsLabel("⏳ Reservasi Pending:"));
+        pendingReservationsLabel = createModernValueLabel("0", new Color(241, 196, 15));
         statsPanel.add(pendingReservationsLabel);
         
-        panel.add(statsPanel, BorderLayout.CENTER);
+        summaryCard.add(statsPanel, BorderLayout.CENTER);
         
-        return panel;
+        return summaryCard;
     }
     
     /**
@@ -365,6 +465,72 @@ public class StatisticsPanel extends JPanel {
         
         loanPanel.revalidate();
         loanPanel.repaint();
+    }
+    
+    /**
+     * Create modern styled button
+     */
+    private JButton createModernButton(String text, Color backgroundColor) {
+        JButton button = new JButton(text) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                Color bgColor = backgroundColor;
+                if (!isEnabled()) {
+                    bgColor = new Color(189, 195, 199);
+                } else if (getModel().isPressed()) {
+                    bgColor = backgroundColor.darker();
+                } else if (getModel().isRollover()) {
+                    bgColor = backgroundColor.brighter();
+                }
+                
+                g2d.setColor(bgColor);
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                
+                g2d.setColor(Color.WHITE);
+                g2d.setFont(getFont());
+                FontMetrics fm = g2d.getFontMetrics();
+                int textX = (getWidth() - fm.stringWidth(getText())) / 2;
+                int textY = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
+                g2d.drawString(getText(), textX, textY);
+                
+                g2d.dispose();
+            }
+        };
+        
+        button.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        button.setForeground(Color.WHITE);
+        button.setBackground(backgroundColor);
+        button.setBorder(null);
+        button.setFocusPainted(false);
+        button.setContentAreaFilled(false);
+        button.setOpaque(false);
+        button.setPreferredSize(new Dimension(180, 35));
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        return button;
+    }
+    
+    /**
+     * Create modern stats label
+     */
+    private JLabel createModernStatsLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        label.setForeground(new Color(52, 73, 94));
+        return label;
+    }
+    
+    /**
+     * Create modern value label
+     */
+    private JLabel createModernValueLabel(String text, Color color) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        label.setForeground(color);
+        return label;
     }
     
     /**

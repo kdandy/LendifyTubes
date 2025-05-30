@@ -92,6 +92,8 @@ public class MainPanel extends JPanel {
         Library library = mainWindow.getLibrary();
         Librarian librarian = mainWindow.getCurrentLibrarian();
         
+
+        
         infoPanel.add(new JLabel("Perpustakaan:", SwingConstants.RIGHT));
         infoPanel.add(new JLabel(library.getName()));
         
